@@ -16,7 +16,7 @@ jobs:
           cp MainActivity.java proj/app/src/main/java/com/fazil/ggvl/
           cp gv.js proj/app/src/main/assets/
           cp ic_launcher.png proj/app/src/main/res/mipmap-xxxhdpi/
-          printf 'rootProject.name="GGGodVaultLouder"\ninclude ":app"\n' > proj/settings.gradle
+          printf 'pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }\ndependencyResolutionManagement { repositories { google(); mavenCentral() } }\nrootProject.name="GGGodVaultLouder"\ninclude ":app"\n' > proj/settings.gradle
           printf "plugins { id 'com.android.application' version '8.5.2' apply false }\n" > proj/build.gradle
           cat > proj/app/build.gradle <<'EOF'
           plugins { id 'com.android.application' }
