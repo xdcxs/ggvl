@@ -1,0 +1,33 @@
+name: Build APK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.7' }
+      - name: Arrange project
+        run: |
+          mkdir -p proj/app/src/main/java/com/fazil/ggvl proj/app/src/main/assets proj/app/src/main/res/mipmap-xxxhdpi
+          cp AndroidManifest.xml proj/app/src/main/
+          cp MainActivity.java proj/app/src/main/java/com/fazil/ggvl/
+          cp gv.js proj/app/src/main/assets/
+          cp ic_launcher.png proj/app/src/main/res/mipmap-xxxhdpi/
+          printf 'rootProject.name="GGGodVaultLouder"\ninclude ":app"\n' > proj/settings.gradle
+          printf "plugins { id 'com.android.application' version '8.5.2' apply false }\n" > proj/build.gradle
+          cat > proj/app/build.gradle <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.fazil.ggvl'
+            compileSdk 34
+            defaultConfig { applicationId 'com.fazil.ggvl'; minSdk 24; targetSdk 34; versionCode 1; versionName '1.0' }
+            compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+          }
+          EOF
+      - run: gradle assembleDebug
+        working-directory: proj
+      - uses: actions/upload-artifact@v4
+        with: { name: GG-GOD-VAULT-LOUDER-apk, path: proj/app/build/outputs/apk/debug/*.apk }
